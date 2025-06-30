@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select PII to Redact</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .pii-checkbox {
+            margin-bottom: 15px;
+        }
+        .pii-checkbox .form-check-input {
+            margin-right: 10px;
+        }
+        .highlighted {
+            background-color: #e2f3fc;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">PII Redaction System</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link">Logged in as: <strong>{{ session.username }}</strong></span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4>Select PII Types to Redact</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>We detected the following types of personally identifiable information (PII) in your document. Select which types you want to redact:</p>
+                        
+                        <form method="POST" action="{{ url_for('redact_file') }}">
+                            <input type="hidden" name="input_file" value="{{ input_file }}">
+                            
+                            <div class="mb-4">
+                                {% for pii_type in pii_types %}
+                                <div class="pii-checkbox form-check">
+                                    <input class="form-check-input" type="checkbox" name="pii_types" value="{{ pii_type }}" id="pii_{{ loop.index }}" checked>
+                                    <label class="form-check-label" for="pii_{{ loop.index }}">
+                                        {{ pii_type }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <p><strong>File to process:</strong> <span class="highlighted">{{ input_file }}</span></p>
+                                <p class="mb-0">Selected PII will be redacted from the document and stored in encrypted format.</p>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Redact Document</button>
+                                <a href="{{ url_for('upload_file') }}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
